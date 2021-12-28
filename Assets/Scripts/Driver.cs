@@ -16,7 +16,15 @@ public class Driver : MonoBehaviour
     {
         float steerAmount = Input.GetAxis("Horizontal") * steerSpeed * Time.deltaTime;
         float moveAmount = Input.GetAxis("Vertical") * moveSpeed * Time.deltaTime;
-        transform.Rotate(0, 0, -steerAmount);
+        
+        if(Input.GetKey(KeyCode.DownArrow)) 
+        {
+            Debug.Log("test");
+            transform.Rotate(0, 0, steerAmount);
+        } else 
+        {
+            transform.Rotate(0, 0, -steerAmount);
+        }
         transform.Translate(0, moveAmount, 0);
     }
 }
