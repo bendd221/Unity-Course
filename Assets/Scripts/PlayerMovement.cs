@@ -6,24 +6,37 @@ using UnityEngine.Animations;
 public class PlayerMovement : MonoBehaviour
 {
     Vector2 moveInput;
-    Rigidbody2D rb2d;
+    Rigidbody2D playerRigidBody;
     Animator playerAnimator;
     CapsuleCollider2D playerCollider;
+    BoxCollider2D playerFeetCollider;
+    float startingGravity;
     [SerializeField] float moveSpeed = 4f;
     [SerializeField] float jumpSpeed = 10f;
+    [SerializeField] float climbSpeed = 5f;
+    bool isAlive = true;
     
     void Start()
     {
-        rb2d = GetComponent<Rigidbody2D>();
+        playerRigidBody = GetComponent<Rigidbody2D>();
         playerAnimator = GetComponent<Animator>();
         playerCollider = GetComponent<CapsuleCollider2D>();
+        playerFeetCollider = GetComponent<BoxCollider2D>();
+        startingGravity = playerRigidBody.gravityScale;
+
     }
 
     
     void Update()
     {
-        bool isRunning = Mathf.Abs(rb2d.velocity.x) > Mathf.Epsilon;
-        Run(isRunning);
+        bool isRunning = Mathf.Abs(playerRigidBody.velocity.x) > Mathf.Epsilon;
+        bool isClimbing = Mathf.Abs(playerRigidBody.velocity.y) > Mathf.Epsilon;
+
+        if(isAlive)
+        {
+            Run(isRunning);
+            ClimbLadder(isClimbing);
+        }
         FlipSprite(isRunning);
     }
 
@@ -34,24 +47,52 @@ public class PlayerMovement : MonoBehaviour
 
     void OnJump(InputValue value)
     {
-        if(value.isPressed && playerCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
+        if(isAlive && value.isPressed && playerFeetCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
         {
-            rb2d.velocity += new Vector2(0, jumpSpeed);
+            playerRigidBody.velocity += new Vector2(0, jumpSpeed);
+        }
+    }
+
+    void ClimbLadder(bool isClimbing)
+    {
+        if(playerFeetCollider.IsTouchingLayers(LayerMask.GetMask("Climbing")))
+        {
+            
+            playerRigidBody.gravityScale = 0;
+            playerRigidBody.velocity = new Vector2(playerRigidBody.velocity.x,  moveInput.y * climbSpeed);
+                playerAnimator.SetBool("isClimbing", isClimbing);
+        }
+        else
+        {
+            playerRigidBody.gravityScale = startingGravity;
+            playerAnimator.SetBool("isClimbing", false);
         }
     }
 
     void Run(bool isRunning)
     {
-        Vector2 playerVelocity = new Vector2(moveInput.x * moveSpeed, rb2d.velocity.y);
-        rb2d.velocity = playerVelocity;
+        Vector2 playerVelocity = new Vector2(moveInput.x * moveSpeed, playerRigidBody.velocity.y);
+        playerRigidBody.velocity = playerVelocity;
         playerAnimator.SetBool("isRunning", isRunning);
     }
 
+    void OnCollisionEnter2D() {
+        if(playerCollider.IsTouchingLayers(LayerMask.GetMask("Enemies")))
+        {
+            Die();
+        }
+    }
     void FlipSprite(bool isRunning)
     {
         if(isRunning)
         {
-            transform.localScale = new Vector2(Mathf.Sign(rb2d.velocity.x), 1f);
+            transform.localScale = new Vector2(Mathf.Sign(playerRigidBody.velocity.x), 1f);
         }
+    }
+
+    void Die()
+    {
+        isAlive = false;
+        playerRigidBody.velocity = new Vector2(0f, 0f);
     }
 }
