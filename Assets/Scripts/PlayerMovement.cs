@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Animations;
+using EZCameraShake;
 public class PlayerMovement : MonoBehaviour
 {
     Vector2 moveInput;
@@ -14,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float moveSpeed = 4f;
     [SerializeField] float jumpSpeed = 10f;
     [SerializeField] float climbSpeed = 5f;
+    [SerializeField] Vector2 deathKick = new Vector2(40f, 40f);
     bool isAlive = true;
     
     void Start()
@@ -94,5 +96,8 @@ public class PlayerMovement : MonoBehaviour
     {
         isAlive = false;
         playerRigidBody.velocity = new Vector2(0f, 0f);
+        playerAnimator.SetTrigger("Death");
+        playerRigidBody.velocity = deathKick;
+        CameraShaker.Instance.ShakeOnce(4f, 4f , .1f, 1f);
     }
 }
