@@ -5,12 +5,12 @@ using UnityEngine;
 public class EnemyMovement : MonoBehaviour
 {
     Rigidbody2D enemyRigidBody;
-    // BoxCollider2D enemyBoxCollider;
+    BoxCollider2D enemyBoxCollider;
     [SerializeField] float moveSpeed = 2f;
     void Start()
     {
         enemyRigidBody = GetComponent<Rigidbody2D>();
-        // enemyBoxCollider = GetComponent<BoxCollider2D>();
+        enemyBoxCollider = GetComponent<BoxCollider2D>();
     }
 
     void Update()
@@ -20,8 +20,12 @@ public class EnemyMovement : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D other)  
     {
-        moveSpeed = -moveSpeed;
-        FlipEnemy();
+
+        if(other.gameObject.layer != LayerMask.NameToLayer("Hazards"))
+        {
+            FlipEnemy();
+            moveSpeed = -moveSpeed;   
+        }
     }
 
     void FlipEnemy()

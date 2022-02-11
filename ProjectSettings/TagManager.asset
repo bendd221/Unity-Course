@@ -18,10 +18,10 @@ TagManager:
   - Background
   - Bouncing
   - Enemies
-  - 
-  - 
-  - 
-  - 
+  - Hazards
+  - Bullets
+  - Portals
+  - Pickups
   - 
   - 
   - 
@@ -50,6 +50,15 @@ TagManager:
     locked: 0
   - name: Platforms
     uniqueID: 545906793
+    locked: 0
+  - name: Hazards
+    uniqueID: 2337475277
+    locked: 0
+  - name: Portals
+    uniqueID: 1739290325
+    locked: 0
+  - name: Pickups
+    uniqueID: 1549529985
     locked: 0
   - name: Enemies
     uniqueID: 1362532649
